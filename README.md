@@ -1,2 +1,2 @@
-# Bitcoin_bot
-A automated trade bot for bitcoin (under development)
+# Bitcoin_Bot
+Experimental. An auto trade bot for bitcoin
