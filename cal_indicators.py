@@ -1,4 +1,5 @@
 import numpy as np
+import talib as ta
 import matplotlib.pyplot as plt
 
 def add_sqzmom_indicators(df, bb_period=20, kc_period=20, atr_period=14, multiplier=2):
@@ -62,9 +63,42 @@ def plot_combined(price_data_df):
     plot_sma_indicators(price_data_df, ax)
     plt.show()
     
-# # Add squeeze momentum indicators indicators
-# squeeze_momentum_df = add_sqzmom_indicators(price_data_df)
 
+def squeeze_momentum_indicator(df, bb_length=20, bb_mult=2.0, kc_length=20, kc_mult=1.5, use_true_range=True):
+    close = df['close'].values
+    high = df['high'].values
+    low = df['low'].values
 
-# # Plot the data
-# plot_price_and_squeeze_indicator(squeeze_momentum_df)
+    # Calculate Bollinger Bands
+    basis = ta.SMA(close, bb_length)
+    dev = bb_mult * ta.STDDEV(close, bb_length)
+    upper_bb = basis + dev
+    lower_bb = basis - dev
+
+    # Calculate Keltner Channels
+    ma = ta.SMA(close, kc_length)
+    if use_true_range:
+        tr = ta.TRANGE(high, low, close)
+    else:
+        tr = high - low
+    rangema = ta.SMA(tr, kc_length)
+    upper_kc = ma + rangema * kc_mult
+    lower_kc = ma - rangema * kc_mult
+
+    sqz_on = (lower_bb > lower_kc) & (upper_bb < upper_kc)
+    sqz_off = (lower_bb < lower_kc) & (upper_bb > upper_kc)
+    no_sqz = ~sqz_on & ~sqz_off
+
+    linreg_input = close - ta.SMA(np.maximum(high, close) + np.minimum(low, close) / 2, kc_length)
+    val = ta.LINEARREG(linreg_input, kc_length)
+
+    df['val'] = val
+    df['sqz_on'] = sqz_on
+    df['sqz_off'] = sqz_off
+    df['no_sqz'] = no_sqz
+
+    return df
+
+# Example usage
+# df is a pandas DataFrame with columns 'close', 'high', and 'low'
+result = squeeze_momentum_indicator(df)
