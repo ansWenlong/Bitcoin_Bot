@@ -4,17 +4,17 @@ from matplotlib.ticker import MaxNLocator
 import pandas as pd
 import numpy as np
 
-def plot_sma_indicators(df, ax=None):
+def plot_sma_indicators(df, MA1='short_term_MA', MA2='long_term_MA',ax=None, ):
     if ax is None:
         ax = plt.gca()
-    ax.plot(df['time'], df['sma_25'], label='SMA 25', color='blue')
-    ax.plot(df['time'], df['sma_50'], label='SMA 50', color='red')
+    ax.plot(df['time'], df[MA1], label=MA1, color='blue')
+    ax.plot(df['time'], df[MA2], label=MA2, color='red')
     ax.legend()
 
-def plot_combined(price_data_df):
+def plot_combined(price_data_df, MA1='short_term_MA', MA2='long_term_MA'):
     fig, ax = plt.subplots(figsize=(12, 6))
     plot_price(price_data_df, ax)
-    plot_sma_indicators(price_data_df, ax)
+    plot_sma_indicators(price_data_df, MA1,MA2,ax)
     plt.show()
 
 def plot_price(df, ax=None):
@@ -56,14 +56,14 @@ def plot_squeeze_momentum(df):
 
     # Squeeze Momentum Indicator chart
     colors = np.where(df['squeeze_momentum'] >= 0, 'g', 'r')
-    ax2.bar(df['time'], df['squeeze_momentum'], color=colors, label='Squeeze Momentum Indicator', width=0.02)
+    ax2.bar(df['time'], df['squeeze_momentum'], color=colors, label='Squeeze Momentum Indicator', width=0.1)
     ax2.set_ylabel('Squeeze Momentum')
 
-    # Plot squeeze on/off markers
-    squeeze_on_times = df.loc[df['squeeze_on'], 'time']
-    squeeze_off_times = df.loc[df['squeeze_off'], 'time']
-    ax2.scatter(squeeze_on_times, np.zeros(len(squeeze_on_times)), marker='^', color='black', label='Squeeze On')
-    ax2.scatter(squeeze_off_times, np.zeros(len(squeeze_off_times)), marker='v', color='blue', label='Squeeze Off')
+   #  # Plot squeeze on/off markers
+   #  squeeze_on_times = df.loc[df['squeeze_on'], 'time']
+   #  squeeze_off_times = df.loc[df['squeeze_off'], 'time']
+   #  ax2.scatter(squeeze_on_times, np.zeros(len(squeeze_on_times)), marker='^', color='black', label='Squeeze On')
+   #  ax2.scatter(squeeze_off_times, np.zeros(len(squeeze_off_times)), marker='v', color='blue', label='Squeeze Off')
 
     # Set the maximum number of x-axis ticks
     max_ticks = 10
