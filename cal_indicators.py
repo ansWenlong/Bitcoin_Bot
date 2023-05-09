@@ -84,3 +84,19 @@ def calculate_moving_averages(df, price_column, short_term_window, long_term_win
     df['short_term_MA'] = df[price_column].rolling(window=short_term_window).mean()
     df['long_term_MA'] = df[price_column].rolling(window=long_term_window).mean()
     return df
+
+def calculate_ema(df, price_column, window_length):
+    """
+    Calculate the Exponential Moving Average for the given price data.
+
+    Args:
+        df (pd.DataFrame): The price data DataFrame.
+        price_column (str): The name of the column containing the prices in the DataFrame.
+        window_length (int): The window length for the Exponential Moving Average.
+
+    Returns:
+        pd.DataFrame: The DataFrame with an additional column for the EMA.
+    """
+    label='EMA'+str(window_length)
+    df[label] = df[price_column].ewm(span=window_length, adjust=False).mean()
+    return df
