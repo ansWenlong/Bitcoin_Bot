@@ -120,5 +120,5 @@ def save_price_data_to_csv(df, output_dir='.', filename='price_data.csv'):
 
 
 # Example usage
-price_data_df = get_price_data_past_n_days(30)
+price_data_df = get_price_data_past_n_days(180)
 save_price_data_to_csv(price_data_df)

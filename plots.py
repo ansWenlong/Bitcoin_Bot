@@ -15,6 +15,15 @@ def plot_combined(price_data_df, MA1='short_term_MA', MA2='long_term_MA'):
     fig, ax = plt.subplots(figsize=(12, 6))
     plot_price(price_data_df, ax)
     plot_sma_indicators(price_data_df, MA1,MA2,ax)
+    
+    # Highlight buy and sell signals
+    buy_signals = price_data_df[price_data_df['signal'] == 'buy']
+    sell_signals = price_data_df[price_data_df['signal'] == 'sell']
+
+    ax.scatter(buy_signals['time'], buy_signals[MA2], marker='^', color='g', label='Buy', s=100)
+    ax.scatter(sell_signals['time'], sell_signals[MA2], marker='v', color='r', label='Sell', s=100)
+
+    ax.legend()
     plt.show()
 
 def plot_price(df, ax=None):

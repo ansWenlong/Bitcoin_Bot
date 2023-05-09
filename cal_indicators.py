@@ -100,3 +100,53 @@ def calculate_ema(df, price_column, window_length):
     label='EMA'+str(window_length)
     df[label] = df[price_column].ewm(span=window_length, adjust=False).mean()
     return df
+
+def generate_signals(df, short_term_MA_col, long_term_MA_col):
+    """
+    Generate buy and sell signals based on short-term and long-term moving averages.
+
+    Args:
+        df (pd.DataFrame): The price data DataFrame with short-term and long-term moving average columns.
+        short_term_MA_col (str): The name of the column containing the short-term moving average.
+        long_term_MA_col (str): The name of the column containing the long-term moving average.
+
+    Returns:
+        pd.DataFrame: The DataFrame with additional 'signal' column containing buy, sell, or hold values.
+    """
+    # Initialize 'signal' column with 'hold' values
+    df['signal'] = 'hold'
+
+    # Generate buy and sell signals
+    for i in range(1, len(df)):
+        if df.at[i, short_term_MA_col] > df.at[i, long_term_MA_col] and df.at[i - 1, short_term_MA_col] <= df.at[i - 1, long_term_MA_col]:
+            df.at[i, 'signal'] = 'buy'
+        elif df.at[i, short_term_MA_col] < df.at[i, long_term_MA_col] and df.at[i - 1, short_term_MA_col] >= df.at[i - 1, long_term_MA_col]:
+            df.at[i, 'signal'] = 'sell'
+
+    return df
+
+def backtest(df, initial_balance=10000):
+    balance = initial_balance
+    shares = 0
+    in_position = False
+
+    for index, row in df.iterrows():
+        if row['signal'] == 'buy' and not in_position:
+            shares = balance / row['close']
+            balance = 0
+            in_position = True
+            print(f"{row['time']} - Buy at {row['close']}")
+
+        elif row['signal'] == 'sell' and in_position:
+            balance = shares * row['close']
+            shares = 0
+            in_position = False
+            print(f"{row['time']} - Sell at {row['close']}")
+
+    if in_position:
+        balance = shares * df.iloc[-1]['close']
+
+    profit_loss = balance - initial_balance
+    return profit_loss
+
+
