@@ -9,7 +9,6 @@ price_data = pd.read_csv('price_data.csv')
 # add sma indicators
 price_data = squeeze_momentum_indicator(price_data)
 
-save_price_data_to_csv(price_data, filename='price_data_with_indicator.csv')
-
+price_data = 
 # plot the price data
 plot_squeeze_momentum(price_data)

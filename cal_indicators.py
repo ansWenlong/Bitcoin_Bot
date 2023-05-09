@@ -68,3 +68,19 @@ def squeeze_momentum_indicator(df, length_bb=20, mult_bb=2, length_kc=20, mult_k
 
     return df
 
+def calculate_moving_averages(df, price_column, short_term_window, long_term_window):
+    """
+    Calculate short-term and long-term moving averages for the given price data.
+
+    Args:
+        df (pd.DataFrame): The price data DataFrame.
+        price_column (str): The name of the column containing the prices in the DataFrame.
+        short_term_window (int): The window length for the short-term moving average.
+        long_term_window (int): The window length for the long-term moving average.
+
+    Returns:
+        pd.DataFrame: The DataFrame with additional columns for short-term and long-term moving averages.
+    """
+    df['short_term_MA'] = df[price_column].rolling(window=short_term_window).mean()
+    df['long_term_MA'] = df[price_column].rolling(window=long_term_window).mean()
+    return df
