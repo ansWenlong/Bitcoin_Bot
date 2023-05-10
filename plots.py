@@ -15,7 +15,7 @@ def plot_combined(price_data_df, MA1='short_term_MA', MA2='long_term_MA'):
     fig, ax = plt.subplots(figsize=(12, 6))
     plot_price(price_data_df, ax)
     plot_sma_indicators(price_data_df, MA1,MA2,ax)
-    
+
     # Highlight buy and sell signals
     buy_signals = price_data_df[price_data_df['signal'] == 'buy']
     sell_signals = price_data_df[price_data_df['signal'] == 'sell']
@@ -57,7 +57,7 @@ def plot_squeeze_momentum(df):
 
     # Convert the 'time' column to datetime objects
     df['time'] = pd.to_datetime(df['time'])
-    
+
     # Price chart
     ax1.plot(df['time'], df['close'], label='Close Price', color='blue')
     ax1.set_title('BTC Price and Squeeze Momentum Indicator')
@@ -102,4 +102,32 @@ def plot_price_and_squeeze_indicator(df):
 
     plt.show()
 
+def plot_balance_and_price(price_data_df, balance_data):
+    fig, ax1 = plt.subplots(figsize=(12, 6))
 
+    # Convert the 'time' column to datetime objects
+    price_data_df['time'] = pd.to_datetime(price_data_df['time'])
+    balance_data['time'] = pd.to_datetime(balance_data['time'])
+
+    # Plot closing price vs. time
+    ax1.plot(price_data_df['time'], price_data_df['close'], label='BTC-USD Price', color='black')
+    ax1.set_xlabel('Time')
+    ax1.set_ylabel('Price')
+    ax1.set_title('Bitcoin Price and Balance Over Time')
+    ax1.legend(loc='upper left')
+
+    # Create a second y-axis
+    ax2 = ax1.twinx()
+
+    # Plot balance vs. time
+    ax2.plot(balance_data['time'], balance_data['balance'], label='Balance', color='blue')
+    ax2.set_ylabel('Balance')
+    ax2.legend(loc='upper right')
+
+    # Set the maximum number of x-axis ticks
+    max_ticks = 10
+    ax1.xaxis.set_major_locator(mdates.AutoDateLocator())
+    ax1.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+    fig.autofmt_xdate()
+
+    plt.show()

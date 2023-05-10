@@ -125,28 +125,36 @@ def generate_signals(df, short_term_MA_col, long_term_MA_col):
 
     return df
 
-def backtest(df, initial_balance=10000):
-    balance = initial_balance
-    shares = 0
+def backtest_sma_strategy(price_data_df, initial_balance=10000, short_term_MA='short_term_MA', long_term_MA='long_term_MA'):
     in_position = False
+    balance = pd.DataFrame(columns=['time', 'balance'])
+    current_balance = initial_balance
 
-    for index, row in df.iterrows():
+    for index, row in price_data_df.iterrows():
         if row['signal'] == 'buy' and not in_position:
-            shares = balance / row['close']
-            balance = 0
             in_position = True
-            print(f"{row['time']} - Buy at {row['close']}")
+            buy_price = row['close']
+            buy_time = row['time']
+            shares_to_buy = current_balance / row['close']
+            print(f"{buy_time}: BUY  at {buy_price:8.2f}, Total profit: {current_balance - initial_balance:10.2f}, Profit percentage: {((current_balance - initial_balance) / initial_balance) * 100:6.2f}%")
 
-        elif row['signal'] == 'sell' and in_position:
-            balance = shares * row['close']
-            shares = 0
+        if row['signal'] == 'sell' and in_position:
             in_position = False
-            print(f"{row['time']} - Sell at {row['close']}")
+            sell_price = row['close']
+            sell_time = row['time']
+            current_balance = shares_to_buy * row['close']
+            print(f"{sell_time}: SELL at {sell_price:8.2f}, Total profit: {current_balance - initial_balance:10.2f}, Profit percentage: {((current_balance - initial_balance) / initial_balance) * 100:6.2f}%")
+            new_row = pd.DataFrame({'time': [sell_time], 'balance': [current_balance]})
+            balance = pd.concat([balance, new_row], ignore_index=True)
 
+    # Account for the value of the remaining shares at the end of the backtesting period
     if in_position:
-        balance = shares * df.iloc[-1]['close']
+        starting_balance = shares_to_buy * price_data_df.iloc[-1]['close']
+        new_row = pd.DataFrame({'time': [price_data_df.iloc[-1]['time']], 'balance': [starting_balance]})
+        balance = pd.concat([balance, new_row], ignore_index=True)
 
-    profit_loss = balance - initial_balance
-    return profit_loss
+    return balance
+
+
 
 
