@@ -40,7 +40,7 @@ def get_daily_data(date=None, retries=3, sleep_time=5):
     params = {
         "start": start_time.isoformat() + "Z",
         "end": end_time.isoformat() + "Z",
-        "granularity": 3600,  # 1 day in seconds
+        "granularity": 3600*24,  # 1 day in seconds
     }
 
     for attempt in range(retries):
@@ -120,5 +120,5 @@ def save_price_data_to_csv(df, output_dir='.', filename='price_data.csv'):
 
 
 # Example usage
-price_data_df = get_price_data_past_n_days(180)
+price_data_df = get_price_data_past_n_days(360)
 save_price_data_to_csv(price_data_df)

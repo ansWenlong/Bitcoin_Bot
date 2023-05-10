@@ -1,2 +1,5 @@
 *.env
 *.pyc
+bitbot/
+.virtual_documents/*
+.ipynb_checkpoints/*

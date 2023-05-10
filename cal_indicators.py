@@ -125,6 +125,34 @@ def generate_signals(df, short_term_MA_col, long_term_MA_col):
 
     return df
 
+
+def generate_smi_signals(df, smi_col='squeeze_momentum', squeeze_on_col='squeeze_on', min_smi_threshold=0.2):
+    """
+    Generate buy and sell signals based on the squeeze momentum indicator.
+
+    Args:
+        df (pd.DataFrame): The price data DataFrame with SMI values.
+        smi_col (str): The column name for the squeeze momentum indicator values.
+        squeeze_on_col (str): The column name for the squeeze on flag.
+        min_smi_threshold (float): The minimum SMI threshold for generating signals.
+
+    Returns:
+        pd.DataFrame: The input DataFrame with buy and sell signals added as a new column.
+    """
+    signals = []
+    for i in range(len(df)):
+        if df.at[i, squeeze_on_col] and df.at[i, smi_col] > min_smi_threshold:
+            signals.append('buy')
+        elif df.at[i, squeeze_on_col] and df.at[i, smi_col] < -min_smi_threshold:
+            signals.append('sell')
+        else:
+            signals.append(None)
+
+    df['signal'] = signals
+    return df
+
+
+
 def backtest_sma_strategy(price_data_df, initial_balance=10000, short_term_MA='short_term_MA', long_term_MA='long_term_MA'):
     in_position = False
     balance = pd.DataFrame(columns=['time', 'balance'])

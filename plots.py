@@ -68,11 +68,13 @@ def plot_squeeze_momentum(df):
     ax2.bar(df['time'], df['squeeze_momentum'], color=colors, label='Squeeze Momentum Indicator', width=0.1)
     ax2.set_ylabel('Squeeze Momentum')
 
-   #  # Plot squeeze on/off markers
-   #  squeeze_on_times = df.loc[df['squeeze_on'], 'time']
-   #  squeeze_off_times = df.loc[df['squeeze_off'], 'time']
-   #  ax2.scatter(squeeze_on_times, np.zeros(len(squeeze_on_times)), marker='^', color='black', label='Squeeze On')
-   #  ax2.scatter(squeeze_off_times, np.zeros(len(squeeze_off_times)), marker='v', color='blue', label='Squeeze Off')
+
+    # Highlight squeeze on/off signals
+    squeeze_on_signals = df[df['squeeze_on'] == True]
+    squeeze_off_signals = df[df['squeeze_off'] == True]   
+    
+    ax2.scatter(squeeze_on_signals['time'], squeeze_on_signals['squeeze_momentum'], marker='^', color='g', label='Squeeze On', s=100)
+    ax2.scatter(squeeze_off_signals['time'], squeeze_off_signals['squeeze_momentum'], marker='v', color='r', label='Squeeze Off', s=100)
 
     # Set the maximum number of x-axis ticks
     max_ticks = 10
